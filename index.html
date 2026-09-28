@@ -1,0 +1,951 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>M-Technology</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="icon" href="assets/logo-mark.png">
+    <link rel="stylesheet" href="style.css?v=11">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="theme.js" defer></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+</head>
+<body class="bg-gray-900 text-gray-100 flex flex-col min-h-screen light-theme">
+
+    <div id="page-loader" aria-label="Cargando"><img src="assets/logo-mark.png" alt="M-Technology"><div class="loader-bar-wrap"><div class="loader-bar"></div></div></div>
+    <script>
+        (function () {
+            function hideLoader() {
+                var loader = document.getElementById('page-loader');
+                if (loader) loader.classList.add('is-hidden');
+            }
+            try {
+                if (sessionStorage.getItem('mtech-skip-home-loader') === '1') {
+                    sessionStorage.removeItem('mtech-skip-home-loader');
+                    var savedScrollPosition = Number(sessionStorage.getItem('mtech-home-scroll-position')) || 0;
+                    sessionStorage.removeItem('mtech-home-scroll-position');
+                    hideLoader();
+                    window.addEventListener('load', function () {
+                        window.requestAnimationFrame(function () {
+                            window.requestAnimationFrame(function () {
+                                var reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                                window.scrollTo({
+                                    top: savedScrollPosition,
+                                    behavior: reducedMotion ? 'auto' : 'smooth'
+                                });
+                            });
+                        });
+                    }, { once: true });
+                    return;
+                }
+            } catch (error) {
+                console.warn('No se pudo leer el regreso al inicio:', error);
+            }
+            window.setTimeout(hideLoader, 1800);
+            window.addEventListener('load', function () { window.setTimeout(hideLoader, 900); });
+        })();
+    </script>
+
+    
+
+    <!-- Header Navigation -->
+    <header id="siteHeader" class="bg-gray-800 border-b border-gray-700 sticky top-0 z-40">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                
+    <!-- Logo -->
+<div class="flex items-center cursor-pointer" onclick="filterCategory('todos')" aria-label="M-Technology">
+    <div class="brand-wordmark"><span class="brand-mark">M-</span>TECHNOLOGY</div>
+</div>
+                <!-- Cart & Quotation Actions -->
+                <div class="flex items-center space-x-4">
+                    <button type="button" class="theme-toggle" data-theme-toggle onclick="toggleTheme()" aria-label="Cambiar a modo oscuro" aria-pressed="true" title="Cambiar a modo oscuro">
+                        <i class="fa-solid fa-sun" aria-hidden="true"></i>
+                    </button>
+                    <button onclick="toggleCartModal()" class="relative p-2 text-gray-300 hover:text-white transition">
+                        <i class="fa-solid fa-cart-shopping text-xl"></i>
+                        <span id="cartCount" class="absolute -top-1 -right-1 bg-blue-600 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold">0</span>
+                    </button>
+                    <button onclick="toggleQuoteModal()" class="quote-button bg-gray-700 hover:bg-gray-600 text-white px-3 py-2 rounded-lg text-sm font-medium transition flex items-center gap-2 border border-gray-600">
+                        <i class="fa-solid fa-file-invoice text-blue-400"></i> Cotizar
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </header>
+
+    <!-- Promotional carousel -->
+    <div id="heroCarousel" class="hero-carousel relative overflow-hidden" aria-label="Promociones destacadas">
+        <div class="hero-slides" aria-hidden="true"></div>
+        <div class="hero-overlay"></div>
+        <div class="hero-content relative z-10 w-full max-w-7xl mx-auto px-6 py-8 md:px-8 md:py-10">
+            <div class="max-w-xl"><br><br><br>
+                <br>
+                <br>
+                <br>
+                <br>
+               
+             
+                <a href="#catalogo" class="hero-cta">Ver Catálogo <i class="fa-solid fa-arrow-right" aria-hidden="true"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <main id="catalogMain" class="flex-grow max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 pt-4 pb-8">
+
+        <!-- Catalog Section -->
+        <div id="catalogo">
+            <nav id="categoryNav" data-reveal="up" class="category-ribbon mb-5 overflow-x-auto" aria-label="Categorías del catálogo">
+                <div class="max-w-7xl mx-auto px-4 py-2">
+                    <div class="flex flex-col gap-2 md:flex-row md:items-center md:gap-4">
+                        <div class="relative w-full md:hidden">
+                            <input type="text" id="searchInputMobile" oninput="searchProductsMobile()" placeholder="Buscar productos..." class="w-full bg-gray-700 text-white text-sm rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-600">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-gray-400"></i>
+                        </div>
+                        <div class="flex min-w-0 items-center gap-2 overflow-x-auto whitespace-nowrap scrollbar-none md:flex-1">
+                            <button onclick="filterCategory('todos')" class="cat-btn active bg-blue-600 text-white px-4 py-1.5 rounded-full font-medium transition" data-cat="todos">Todos</button>
+                            <button onclick="filterCategory('laptops')" class="cat-btn bg-gray-700 hover:bg-gray-600 text-gray-300 px-4 py-1.5 rounded-full font-medium transition" data-cat="laptops">Laptops</button>
+                            <button onclick="filterCategory('componentes')" class="cat-btn bg-gray-700 hover:bg-gray-600 text-gray-300 px-4 py-1.5 rounded-full font-medium transition" data-cat="componentes">Componentes PC</button>
+                            <button onclick="filterCategory('monitores')" class="cat-btn bg-gray-700 hover:bg-gray-600 text-gray-300 px-4 py-1.5 rounded-full font-medium transition" data-cat="monitores">Monitores</button>
+                            <button onclick="filterCategory('accesorios')" class="cat-btn bg-gray-700 hover:bg-gray-600 text-gray-300 px-4 py-1.5 rounded-full font-medium transition" data-cat="accesorios">Accesorios</button>
+                        </div>
+                        <div class="relative hidden w-full md:block md:w-[28rem] md:flex-none">
+                            <input type="text" id="searchInput" oninput="searchProducts()" placeholder="Buscar laptops, componentes, accesorios..." class="w-full bg-gray-700 text-white text-sm rounded-lg pl-10 pr-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 border border-gray-600">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-gray-400"></i>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+            <div class="catalog-heading flex justify-between items-center mb-6">
+                <h2 class="text-xl font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-microchip text-blue-500"></i> Catálogo de Productos
+                </h2>
+                <div class="flex items-center gap-3">
+                    <span id="stockStatus" class="stock-status"><i class="fa-solid fa-circle-check"></i> Disponible para entrega</span>
+                    <span id="productCount" class="text-xs text-gray-400">Mostrando productos</span>
+                </div>
+            </div>
+
+            <div class="catalog-layout">
+                <aside id="catalogFilters" class="catalog-filters" aria-label="Filtros del catálogo">
+                    <div class="catalog-filters-header">
+                        <h3>Filtrar productos</h3>
+                        <button type="button" onclick="clearCatalogFilters()">Limpiar filtros</button>
+                    </div>
+                    <label class="availability-filter">
+                        <input id="availableOnlyFilter" type="checkbox" onchange="applyCatalogFilters()">
+                        <span>Solo disponibles</span>
+                    </label>
+                    <section class="filter-section">
+                        <h4>Precio (USD)</h4>
+                        <div class="price-inputs">
+                            <input id="minPriceFilter" type="number" min="0" placeholder="Mín" oninput="applyCatalogFilters()">
+                            <span>—</span>
+                            <input id="maxPriceFilter" type="number" min="0" placeholder="Máx" oninput="applyCatalogFilters()">
+                        </div>
+                    </section>
+                    <section class="filter-section">
+                        <h4>Categorías</h4>
+                        <div id="categoryFilters" class="filter-options"></div>
+                    </section>
+                    <section class="filter-section">
+                        <h4>Marcas</h4>
+                        <div id="brandFilters" class="filter-options"></div>
+                    </section>
+                </aside>
+
+                <div class="catalog-results">
+                    <!-- Products Grid -->
+                    <div id="productsGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+                        <!-- Products will be injected by JS -->
+                    </div>
+                    <div id="catalogPagination" class="catalog-pagination" aria-label="Paginación del catálogo"></div>
+                </div>
+            </div>
+        </div>
+
+        <br><br>
+        <section class="home-benefits" data-reveal="up" aria-label="Beneficios de M-Technology">
+            <article class="home-benefit" data-reveal="up"><span class="home-benefit-icon"><i class="fa-solid fa-shield-halved"></i></span><strong>Garantía 6 meses</strong><span>En todo el territorio nacional</span></article>
+            <article class="home-benefit" data-reveal="up"><span class="home-benefit-icon"><i class="fa-regular fa-credit-card"></i></span><strong>Transferencias y efectivo</strong><span>Paga como prefieras</span></article>
+            <article class="home-benefit" data-reveal="up"><span class="home-benefit-icon"><i class="fa-solid fa-truck-fast"></i></span><strong>Envíos a todo el país</strong><span>Recibe donde estés</span></article>
+            <article class="home-benefit" data-reveal="up"><span class="home-benefit-icon"><i class="fa-solid fa-location-dot"></i></span><strong>Entrega inmediata en David</strong><span>Artículos seleccionados</span></article>
+        </section>
+
+        <section class="home-services" data-reveal="up" aria-labelledby="servicesTitle">
+            <div class="home-services-heading">
+                <h2 id="servicesTitle">Tecnología y soluciones, <span>al alcance de tu mano</span></h2>
+                <p>¿Necesitas un equipo, mantenimiento o soporte técnico? Estamos para ayudarte. En M-Technology ofrecemos soluciones pensadas para ti.</p>
+            </div>
+            <div class="home-services-grid">
+                <a class="home-service-card" data-reveal="up" href="quienes-somos.html">
+                    <img src="assets/tec1.png" alt="Técnico de M-Technology listo para ayudarte" loading="lazy">
+                    <span class="home-service-icon"><i class="fa-solid fa-user"></i></span>
+                    <div class="home-service-copy"><h3>¿Quiénes somos?</h3><p>Conoce un poco más acerca del equipo y cómo nació M-Technology.</p><strong>Conoce un poco más <i class="fa-solid fa-arrow-right"></i></strong></div>
+                </a>
+                <a class="home-service-card" data-reveal="up" href="mantenimiento-impresoras.html">
+                    <img src="assets/tec2.png" alt="Servicio técnico y mantenimiento de impresoras" loading="lazy">
+                    <span class="home-service-icon"><i class="fa-solid fa-screwdriver-wrench"></i></span>
+                    <div class="home-service-copy"><h3>Mantenimiento de impresoras</h3><p>Agenda el mantenimiento preventivo de tu equipo en David, Chiriquí.</p><strong>Agenda tu limpieza <i class="fa-solid fa-arrow-right"></i></strong></div>
+                </a>
+                <a class="home-service-card" data-reveal="up" href="reparacion-computadoras.html">
+                    <img src="assets/tec3.png" alt="Reparación y diagnóstico de equipos de cómputo" loading="lazy">
+                    <span class="home-service-icon"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <div class="home-service-copy"><h3>Reparación de computadoras</h3><p>Diagnóstico y soluciones para laptops y computadoras de escritorio.</p><strong>Cotiza con nosotros <i class="fa-solid fa-arrow-right"></i></strong></div>
+                </a>
+            </div>
+        </section>
+
+        <section class="instagram-section" data-reveal="up" aria-labelledby="instagramTitle">
+            <div class="instagram-heading">
+                <h2 id="instagramTitle">Síguenos en Instagram</h2>
+                <p>Recuerda seguirnos en <a href="https://www.instagram.com/m_technology507/" target="_blank" rel="noopener noreferrer">@m_technology507</a></p>
+            </div>
+            <div class="instagram-gallery">
+                <a class="instagram-tile" data-reveal="up" href="https://www.instagram.com/m_technology507/" target="_blank" rel="noopener noreferrer" aria-label="Visita M-Technology en Instagram">
+                    <img src="assets/144.webp" alt="Novedades de tecnología de M-Technology" loading="lazy">
+                    <span class="instagram-tile-overlay"><i class="fa-brands fa-instagram" aria-hidden="true"></i></span>
+                </a>
+                <a class="instagram-tile" data-reveal="up" href="https://www.instagram.com/m_technology507/" target="_blank" rel="noopener noreferrer" aria-label="Visita M-Technology en Instagram">
+                    <img src="assets/nsx.webp" alt="Productos y equipos disponibles en M-Technology" loading="lazy">
+                    <span class="instagram-tile-overlay"><i class="fa-brands fa-instagram" aria-hidden="true"></i></span>
+                </a>
+                <a class="instagram-tile" data-reveal="up" href="https://www.instagram.com/m_technology507/" target="_blank" rel="noopener noreferrer" aria-label="Visita M-Technology en Instagram">
+                    <img src="assets/ups.webp" alt="Promoción de tecnología de M-Technology" loading="lazy">
+                    <span class="instagram-tile-overlay"><i class="fa-brands fa-instagram" aria-hidden="true"></i></span>
+                </a>
+            </div>
+        </section>
+
+        <section class="visit-section" data-reveal="up" aria-labelledby="visitTitle">
+            <div class="visit-heading">
+                <span class="visit-kicker">M-Technology · David, Chiriquí</span>
+                <h2 id="visitTitle">Tu próxima compra <span>empieza aquí</span></h2>
+                <p>Encuéntranos en David Chiriquí y ven a conocer nuestros equipos y servicios.</p>
+            </div>
+            <div class="visit-map-shell">
+                <iframe
+                    class="visit-map"
+                    title="Ubicación de M-Technology en David, Chiriquí"
+                    src="https://maps.google.com/maps?q=M-TECHNOLOGY%2C%20David%2C%20Chiriqu%C3%AD%2C%20Panam%C3%A1&z=16&output=embed"
+                    loading="lazy"
+                    referrerpolicy="no-referrer-when-downgrade"
+                    allowfullscreen>
+                </iframe>
+            </div>
+            <div class="visit-map-footer">
+                <div class="visit-address"><i class="fa-solid fa-location-dot" aria-hidden="true"></i><span><strong>M-TECHNOLOGY</strong><span>David, Chiriquí, Panamá</span></span></div>
+                <div class="visit-map-actions">
+                    <a class="visit-map-link visit-google-link" href="https://maps.app.goo.gl/GUvyQB1f1SS9snqv8" target="_blank" rel="noopener noreferrer"><i class="fa-solid fa-map-location-dot" aria-hidden="true"></i> Google Maps</a>
+                    <a class="visit-map-link visit-waze-link" href="https://waze.com/ul?ll=8.427717%2C-82.4320775&navigate=yes" target="_blank" rel="noopener noreferrer"><i class="fa-brands fa-waze" aria-hidden="true"></i> Waze</a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Product Detail Page -->
+    <div id="productPage" class="product-page hidden flex-grow bg-gray-900" aria-labelledby="productPageTitle">
+        <div id="productPageContent" class="max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-8"></div>
+    </div>
+
+    <!-- Floating WhatsApp Button -->
+    <a href="https://wa.me/50765041394?text=Hola,%20quisiera%20mas%20informacion%20sobre%20un%20producto" target="_blank" class="fixed bottom-6 right-6 bg-green-500 hover:bg-green-600 text-white p-4 rounded-full shadow-2xl flex items-center justify-center transition-all transform hover:scale-110 z-30">
+        <i class="fa-brands fa-whatsapp text-3xl"></i>
+    </a>
+
+    <!-- Shopping Cart Modal -->
+    <div id="cartModal" class="fixed inset-0 bg-black/70 z-50 flex justify-end hidden backdrop-blur-sm">
+        <div class="cart-modal-panel bg-gray-800 h-full flex flex-col shadow-2xl border-l border-gray-700">
+            <div class="flex justify-between items-center pb-4 border-b border-gray-700">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-cart-shopping text-blue-500"></i> Carrito de Compras
+                </h3>
+                <button onclick="toggleCartModal()" class="text-gray-400 hover:text-white text-xl">&times;</button>
+            </div>
+
+            <div id="cartItems" class="flex-1 overflow-y-auto py-4 space-y-4">
+                <!-- Cart items JS -->
+            </div>
+
+            <div class="border-t border-gray-700 pt-4 space-y-3">
+                <div class="flex justify-between text-sm text-gray-400">
+                    <span>Subtotal:</span>
+                    <span id="cartSubtotal">$0.00</span>
+                </div>
+                <div class="flex justify-between text-sm text-gray-400">
+                    <span>ITBMS (7%):</span>
+                    <span id="cartTax">$0.00</span>
+                </div>
+                <div class="flex justify-between text-lg font-bold text-white pt-2 border-t border-gray-700">
+                    <span>Total:</span>
+                    <span id="cartTotal" class="text-blue-400">$0.00</span>
+                </div>
+                <button onclick="sendCartToWhatsApp()" class="w-full bg-green-600 hover:bg-green-500 text-white font-semibold py-3 rounded-lg flex items-center justify-center gap-2 transition">
+                    <i class="fa-brands fa-whatsapp text-xl"></i> Pedir por WhatsApp
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quotation Modal -->
+    <div id="quoteModal" class="fixed inset-0 bg-black/70 z-50 flex items-center justify-center hidden p-4 backdrop-blur-sm">
+        <div class="quote-modal-panel bg-gray-800 max-w-lg w-full rounded-xl p-6 border border-gray-700 shadow-2xl">
+            <div class="flex justify-between items-center pb-4 border-b border-gray-700">
+                <h3 class="text-lg font-bold text-white flex items-center gap-2">
+                    <i class="fa-solid fa-file-invoice text-blue-500"></i> Solicitar Cotización
+                </h3>
+                <button onclick="toggleQuoteModal()" class="text-gray-400 hover:text-white text-xl">&times;</button>
+            </div>
+            
+            <form id="quoteForm" onsubmit="handleQuoteSubmit(event)" class="mt-4 space-y-4">
+                <div>
+                    <label class="block text-xs font-medium text-gray-300 mb-1">Nombre Completo</label>
+                    <input type="text" required class="w-full bg-gray-700 text-white text-sm rounded-lg p-2.5 border border-gray-600 focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-300 mb-1">Correo Electrónico</label>
+                    <input type="email" required class="w-full bg-gray-700 text-white text-sm rounded-lg p-2.5 border border-gray-600 focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-300 mb-1">Teléfono / WhatsApp</label>
+                    <input type="tel" required class="w-full bg-gray-700 text-white text-sm rounded-lg p-2.5 border border-gray-600 focus:outline-none focus:border-blue-500">
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-300 mb-1">Detalles de la consulta o equipo</label>
+                    <textarea rows="3" required placeholder="Especifica requerimientos o componentes deseados..." class="w-full bg-gray-700 text-white text-sm rounded-lg p-2.5 border border-gray-600 focus:outline-none focus:border-blue-500"></textarea>
+                </div>
+                <button type="submit" class="w-full bg-blue-600 hover:bg-blue-500 text-white font-semibold py-2.5 rounded-lg transition">
+                    Enviar Solicitud
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="quoteSuccessModal" class="quote-success-overlay" role="dialog" aria-modal="true" aria-labelledby="quoteSuccessTitle" aria-describedby="quoteSuccessMessage" onclick="if (event.target === this) closeQuoteSuccessModal()" hidden>
+        <div class="quote-success-panel">
+            <button id="quoteSuccessClose" type="button" class="quote-success-close" onclick="closeQuoteSuccessModal()" aria-label="Cerrar confirmación">&times;</button>
+            <div class="quote-success-icon" aria-hidden="true"><i class="fa-solid fa-check"></i></div>
+            <h2 id="quoteSuccessTitle">¡Cotización enviada!</h2>
+            <p id="quoteSuccessMessage">Gracias por tu solicitud. Nos pondremos en contacto contigo pronto.</p>
+            <button type="button" class="quote-success-button" onclick="closeQuoteSuccessModal()">Entendido</button>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gray-800 border-t border-gray-700 mt-12 py-8 text-gray-400 text-sm">
+        <div class="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div>
+                <div class="flex items-center mb-3" aria-label="M-Technology">
+                    <div class="brand-wordmark"><span class="brand-mark">M-</span>TECHNOLOGY</div>
+                </div>
+                <p class="text-xs text-gray-400">Tienda líder en tecnología, ensamblaje de computadoras e importación de hardware de alto rendimiento.</p>
+            </div>
+            <div>
+                <h4 class="text-white font-semibold mb-3">Contacto & Soporte</h4>
+                <ul class="space-y-2 text-xs">
+                    <li><i class="fa-solid fa-location-dot text-blue-500 mr-2"></i>Chiriquí, David</li>
+                    <li><i class="fa-solid fa-phone text-blue-500 mr-2"></i> +507 6504-1394</li>
+                    <li><i class="fa-solid fa-envelope text-blue-500 mr-2"></i> mtechnologypanama@gmail.com</li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="text-white font-semibold mb-3">Horario de Atención</h4>
+                <p class="text-xs">Lunes a viernes: 8:30 AM - 5:00 PM Sabados: 9:00 AM - 2:00 PM</p>
+                <p class="text-xs mt-1">Domingos: Cerrado</p>
+            </div>
+        </div>
+        <div class="max-w-7xl mx-auto px-4 mt-8 pt-4 border-t border-gray-700 text-center text-xs">
+            &copy; 2026 M-Technology Panamá.
+        </div>
+    </footer>
+
+    <!-- Api  Logic JS imagenes del carrusel  -->
+    <script>
+        const companyPhone = '50765041394';
+        const articlesApi = 'https://mtc.mtechnologypanama.com/sys_mbo/ArticuloController/get_art_articulo/1/20260922195022';
+        const articleImageBase = 'https://mtc.mtechnologypanama.com/sys_mbo/uploads/articulos/';
+        const heroImagesApi = 'https://mtc.mtechnologypanama.com/sys_mbo/ArticuloController/get_img_publicidad/20260922195022';
+        const heroImageBase = 'https://mtc.mtechnologypanama.com/sys_mbo/uploads/publicidad/';
+        const fallbackHeroImages = [
+            'assets/ordenador.jpg', 'assets/144.webp', 'assets/3.jpg', 'assets/4.png',
+            'assets/slide-2.png', 'assets/slide-3.png', 'assets/repa.png'
+        ];
+        let heroImages = [...fallbackHeroImages];
+        const purchaseIncludes = [
+            'Windows 11 Pro original',
+            'Office Professional Plus 2021 permanente gratis en PCs',
+            '6 meses de garantía en software y servicio técnico',
+            'Mantenimiento gratis',
+            'Envío a todo Panamá'
+        ];
+        let products = [
+            { id: 1, name: "DELL LATITUDE 7490 | INTEL CORE I7 8TH GEN | 16GB | 512GB SSD", brand: "Dell", reference: 370, category: "laptops", price: 319.99, image: "https://images.unsplash.com/photo-1593642532744-d377ab507dc8?w=900&auto=format&fit=crop&q=80", gallery: ["https://images.unsplash.com/photo-1593642532744-d377ab507dc8?w=900&auto=format&fit=crop&q=80", "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=900&auto=format&fit=crop&q=80", "https://images.unsplash.com/photo-1484788984921-03950022c9ef?w=900&auto=format&fit=crop&q=80"], specs: "Intel Core i7 8th Gen / 16GB RAM / 512GB SSD", description: "Laptop profesional reacondicionada, ligera y lista para trabajar, estudiar o gestionar tu negocio. Su procesador Intel Core i7 y almacenamiento SSD ofrecen un rendimiento rápido y confiable." },
+            { id: 2, name: "Monitor LG Ultragear 27'' 144Hz 1ms", category: "monitores", price: 229.99, image: "https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?w=500&auto=format&fit=crop&q=60", specs: "IPS / FHD / G-Sync Compatible" },
+            { id: 3, name: "Tarjeta de Video RTX 4070 12GB", category: "componentes", price: 649.99, image: "https://images.unsplash.com/photo-1587202372775-e229f172b9d7?w=500&auto=format&fit=crop&q=60", specs: "GDDR6X / Dual Fan / DLSS 3" },
+            { id: 4, name: "Teclado Mecánico RGB Switch Red", category: "accesorios", price: 49.99, image: "https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=500&auto=format&fit=crop&q=60", specs: "Anti-Ghosting / Cable Removible" },
+            { id: 5, name: "LENOVO THINKPAD T480 | INTEL CORE I5 8TH GEN | 16GB | 512GB SSD", brand: "Lenovo", reference: 371, category: "laptops", price: 289.99, image: "https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=900&auto=format&fit=crop&q=80", gallery: ["https://images.unsplash.com/photo-1588872657578-7efd1f1555ed?w=900&auto=format&fit=crop&q=80", "https://images.unsplash.com/photo-1541807084-5c52b6b3adef?w=900&auto=format&fit=crop&q=80", "https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=900&auto=format&fit=crop&q=80"], specs: "Intel Core i5 8th Gen / 16GB RAM / 512GB SSD", description: "ThinkPad resistente y cómodo para jornadas largas. Incluye teclado profesional, excelente autonomía y el desempeño necesario para productividad, clases y trabajo remoto." },
+            { id: 9, name: "HP ELITEBOOK 840 G5 | INTEL CORE I5 8TH GEN | 16GB | 256GB SSD", brand: "HP", reference: 372, category: "laptops", price: 269.99, image: "https://images.unsplash.com/photo-1544731612-de7f96afe55f?w=900&auto=format&fit=crop&q=80", gallery: ["https://images.unsplash.com/photo-1544731612-de7f96afe55f?w=900&auto=format&fit=crop&q=80", "https://images.unsplash.com/photo-1525547719571-a2d4ac8945e2?w=900&auto=format&fit=crop&q=80", "https://images.unsplash.com/photo-1517336714739-489689fd1ca8?w=900&auto=format&fit=crop&q=80"], specs: "Intel Core i5 8th Gen / 16GB RAM / 256GB SSD", description: "Equipo empresarial elegante y portátil, ideal para oficina, universidad y videollamadas. Su diseño delgado combina movilidad, seguridad y rendimiento para el día a día." },
+            { id: 6, name: "Procesador AMD Ryzen 7 7800X3D", category: "componentes", price: 389.99, image: "https://images.unsplash.com/photo-1555680202-c86f0e12f086?w=500&auto=format&fit=crop&q=60", specs: "8 Cores / 16 Threads / AM5" },
+            { id: 7, name: "Mouse Inalámbrico Gamer 26K DPI", category: "accesorios", price: 59.99, image: "https://images.unsplash.com/photo-1615663245857-ac93bb7c39e7?w=500&auto=format&fit=crop&q=60", specs: "Ultra ligero 60g / Batería 80h" },
+            { id: 8, name: "SSD M.2 NVMe 2TB PCIe 4.0", category: "componentes", price: 139.99, image: "https://images.unsplash.com/photo-1597872200969-2b65d56bd16b?w=500&auto=format&fit=crop&q=60", specs: "Lectura 7000 MB/s" }
+        ];
+
+        let cart = [];
+        let activeCategory = 'todos';
+        let activeLaptopBrand = 'todos';
+        const catalogFilters = { categories: [], brands: [], minPrice: '', maxPrice: '' };
+        let currentCatalogItems = [];
+        let currentCatalogPage = 1;
+        const catalogPageSize = 12;
+        let laptopBrandTimer;
+        let heroSlideIndex = 0;
+        let heroSlideTimer;
+
+        function renderHeroSlides() {
+            const slidesContainer = document.querySelector('.hero-slides');
+            slidesContainer.innerHTML = heroImages.map((image, index) =>
+                `<img class="hero-slide ${index === 0 ? 'is-active' : ''}" src="${image}" alt="" ${index === 0 ? 'fetchpriority="high"' : 'loading="lazy"'}>`
+            ).join('');
+        }
+
+        function showHeroSlide(index) {
+            const slides = document.querySelectorAll('.hero-slide');
+            if (!slides.length) return;
+            heroSlideIndex = (index + slides.length) % slides.length;
+            slides.forEach((slide, slideIndex) => slide.classList.toggle('is-active', slideIndex === heroSlideIndex));
+        }
+
+        function startHeroCarousel() {
+            if (heroSlideTimer) clearInterval(heroSlideTimer);
+            heroSlideTimer = setInterval(() => showHeroSlide(heroSlideIndex + 1), 4500);
+        }
+
+        async function loadHeroImages() {
+            try {
+                const response = await fetch(heroImagesApi);
+                if (!response.ok) throw new Error('No se pudieron consultar las imágenes de publicidad');
+                const advertisements = await response.json();
+                const imageUrls = Array.isArray(advertisements)
+                    ? advertisements
+                        .filter(item => String(item.img_sts) === '1' && item.img_name)
+                        .map(item => `${heroImageBase}${encodeURIComponent(item.img_name)}`)
+                    : [];
+                if (!imageUrls.length) throw new Error('La API no devolvió imágenes activas');
+                heroImages = imageUrls;
+                renderHeroSlides();
+                showHeroSlide(0);
+            } catch (error) {
+                console.warn('No se pudieron cargar las imágenes de publicidad; se mantienen las imágenes locales:', error);
+            }
+        }
+
+        const scrollRevealObserver = 'IntersectionObserver' in window
+            ? new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (!entry.isIntersecting) return;
+                    entry.target.classList.add('is-visible');
+                    scrollRevealObserver.unobserve(entry.target);
+                });
+            }, { threshold: 0.12, rootMargin: '0px 0px -32px 0px' })
+            : null;
+
+        function observeScrollReveals(root = document) {
+            root.querySelectorAll('[data-reveal]:not(.is-visible)').forEach(element => {
+                if (!scrollRevealObserver) {
+                    element.classList.add('is-visible');
+                    return;
+                }
+                scrollRevealObserver.observe(element);
+            });
+        }
+
+        function getProductDetails(product) {
+            const categoryNames = {
+                componentes: 'Componente PC',
+                monitores: 'Monitor',
+                accesorios: 'Accesorios'
+            };
+            const fallbackImage = 'https://images.unsplash.com/photo-1517336714739-489689fd1ca8?w=900&auto=format&fit=crop&q=80';
+            return {
+                ...product,
+                brand: product.brand || categoryNames[product.category] || 'Tech Store',
+                reference: product.reference || 400 + product.id,
+                description: product.description || `${product.name} seleccionado para ofrecer rendimiento, calidad y confiabilidad en tu espacio de trabajo o entretenimiento. Recíbelo listo para usar con respaldo y atención especializada.`,
+                gallery: product.gallery || [product.image, fallbackImage, product.image]
+            };
+        }
+
+        function normalizeCategory(category) {
+            const value = String(category || '').toUpperCase();
+            if (value.includes('LAPTOP')) return 'laptops';
+            if (value.includes('MONITOR')) return 'monitores';
+            if (value.includes('ACCESORIO') || value.includes('CARGADOR') || value.includes('BATER')) return 'accesorios';
+            return 'componentes';
+        }
+
+        function mapApiProduct(item, index) {
+            const image = item.art_imgName ? `${articleImageBase}${item.art_imgName}` : 'https://images.unsplash.com/photo-1517336714739-489689fd1ca8?w=900&auto=format&fit=crop&q=80';
+            return {
+                id: Number(item.art_id) || index + 1,
+                name: item.art_descripcion || 'Artículo MTC',
+                brand: item.mar_descripcion || 'MTC',
+                reference: item.art_referencia || item.art_upc || item.art_id,
+                category: normalizeCategory(item.cat_descripcion),
+                originalCategory: String(item.cat_descripcion || 'Tecnología').trim().toUpperCase(),
+                stock: Number(item.inv_qty) || 0,
+                price: Number(item.art_precio) || 0,
+                taxRate: Number(item.art_itbm_venta) || 0.07,
+                image,
+                gallery: [image],
+                specs: `${item.cat_descripcion || 'Tecnología'}${item.art_upc ? ` · UPC ${item.art_upc}` : ''}`,
+                description: `${item.art_descripcion || 'Artículo de tecnología'}${item.mar_descripcion ? ` de la marca ${item.mar_descripcion}` : ''}, disponible en M-Technology.`
+            };
+        }
+
+        function handleProductCardClick(event, productId) {
+            const card = event.currentTarget;
+            const isTouchDevice = window.matchMedia('(hover: none), (pointer: coarse)').matches;
+            if (isTouchDevice) {
+                const wasOpen = card.classList.contains('is-actions-visible');
+                document.querySelectorAll('#productsGrid .laptop-card.is-actions-visible').forEach(openCard => {
+                    openCard.classList.remove('is-actions-visible');
+                });
+                if (!wasOpen) {
+                    card.classList.add('is-actions-visible');
+                    return;
+                }
+            }
+            openProductPage(productId);
+        }
+
+        function renderProducts(items, resetPage = true) {
+            const grid = document.getElementById('productsGrid');
+            currentCatalogItems = items;
+            if (resetPage) currentCatalogPage = 1;
+            const totalPages = Math.max(1, Math.ceil(items.length / catalogPageSize));
+            currentCatalogPage = Math.min(currentCatalogPage, totalPages);
+            const firstItem = (currentCatalogPage - 1) * catalogPageSize;
+            const visibleItems = items.slice(firstItem, firstItem + catalogPageSize);
+            document.getElementById('productCount').textContent = items.length
+                ? `Mostrando ${firstItem + 1}-${firstItem + visibleItems.length} de ${items.length} productos`
+                : 'No se encontraron productos';
+            const availableCount = products.filter(product => product.stock > 0).length;
+            document.getElementById('stockStatus').innerHTML = `<i class="fa-solid fa-circle-check"></i> ${availableCount} productos disponibles para entrega`;
+            grid.innerHTML = visibleItems.map(p => `
+                <div data-reveal="up" class="laptop-card cursor-pointer bg-gray-800 rounded-xl border border-gray-700 overflow-hidden shadow-lg flex flex-col justify-between group hover:border-blue-500 transition" onclick="handleProductCardClick(event, ${p.id})">
+                    <div>
+                        <div class="h-48 overflow-hidden relative">
+                            <img src="${p.image}" alt="${p.name}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+                            <span class="product-category-tag absolute top-2 left-2 text-xs px-2 py-1 rounded uppercase tracking-wider font-semibold">${p.category}</span>
+                        </div>
+                        <div class="p-4">
+                            <h3 class="font-bold text-white text-base leading-snug line-clamp-2">${p.name}</h3>
+                            <p class="text-xs text-gray-400 mt-1">${p.specs}</p>
+                            ${p.stock > 0
+                                ? `<p class="text-xs text-green-400 mt-2"><i class="fa-solid fa-circle-check mr-1"></i>Disponible: ${p.stock} unidad${p.stock === 1 ? '' : 'es'}</p>`
+                                : '<p class="text-xs text-yellow-400 mt-2"><i class="fa-solid fa-clock mr-1"></i>Por pedido</p>'}
+                        </div>
+                    </div>
+                    <div class="p-4 pt-0 flex items-center justify-between mt-2">
+                        <span class="product-price text-xl font-extrabold">$${p.price.toFixed(2)}</span>
+                        <span class="text-xs text-gray-400">Ver detalles <i class="fa-solid fa-arrow-right ml-1"></i></span>
+                    </div>
+                    <div class="product-card-actions" aria-label="Acciones para ${p.name}">
+                        <a href="${whatsAppProductUrl(p)}" target="_blank" rel="noopener" onclick="event.stopPropagation()" class="product-card-action product-card-whatsapp"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i> WhatsApp</a>
+                        <button type="button" onclick="event.stopPropagation(); addToCart(${p.id})" class="product-card-action product-card-cart"><i class="fa-solid fa-cart-plus" aria-hidden="true"></i> Agregar</button>
+                    </div>
+                </div>
+            `).join('');
+            observeScrollReveals(grid);
+            renderCatalogPagination(totalPages);
+        }
+
+        function renderCatalogPagination(totalPages) {
+            const pagination = document.getElementById('catalogPagination');
+            if (totalPages <= 1) {
+                pagination.innerHTML = '';
+                pagination.classList.remove('is-visible');
+                pagination.classList.remove('is-floating');
+                return;
+            }
+            const pages = [];
+            const addPage = page => { if (page >= 1 && page <= totalPages && !pages.includes(page)) pages.push(page); };
+            addPage(1);
+            if (currentCatalogPage > 3) pages.push('ellipsis-left');
+            addPage(currentCatalogPage - 1);
+            addPage(currentCatalogPage);
+            addPage(currentCatalogPage + 1);
+            if (currentCatalogPage < totalPages - 2) pages.push('ellipsis-right');
+            addPage(totalPages);
+            pagination.innerHTML = `
+                <div class="catalog-pagination-inner">
+                    <button class="pagination-button pagination-arrow" onclick="goToCatalogPage(${currentCatalogPage - 1})" ${currentCatalogPage === 1 ? 'disabled' : ''} aria-label="Página anterior"><i class="fa-solid fa-chevron-left"></i></button>
+                    ${pages.map(page => page.toString().startsWith('ellipsis')
+                        ? '<span class="pagination-ellipsis">...</span>'
+                        : `<button class="pagination-button ${page === currentCatalogPage ? 'is-active' : ''}" onclick="goToCatalogPage(${page})" aria-label="Página ${page}" ${page === currentCatalogPage ? 'aria-current="page"' : ''}>${page}</button>`).join('')}
+                    <button class="pagination-button pagination-arrow" onclick="goToCatalogPage(${currentCatalogPage + 1})" ${currentCatalogPage === totalPages ? 'disabled' : ''} aria-label="Página siguiente"><i class="fa-solid fa-chevron-right"></i></button>
+                </div>`;
+            pagination.classList.add('is-visible');
+            updateCatalogPaginationPosition();
+        }
+
+        function goToCatalogPage(page) {
+            const totalPages = Math.ceil(currentCatalogItems.length / catalogPageSize);
+            if (page < 1 || page > totalPages || page === currentCatalogPage) return;
+            currentCatalogPage = page;
+            renderProducts(currentCatalogItems, false);
+            document.getElementById('catalogo').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        function updateCatalogPaginationPosition() {
+            const catalog = document.getElementById('catalogo');
+            const pagination = document.getElementById('catalogPagination');
+            if (!catalog || !pagination || !pagination.classList.contains('is-visible')) return;
+            const catalogBounds = catalog.getBoundingClientRect();
+            const paginationHeight = pagination.offsetHeight || 64;
+            const isInsideCatalog = catalogBounds.top < window.innerHeight && catalogBounds.bottom > 0;
+            const hasReachedCatalogEnd = catalogBounds.bottom <= window.innerHeight + paginationHeight;
+            pagination.classList.toggle('is-floating', isInsideCatalog && !hasReachedCatalogEnd);
+        }
+
+        window.addEventListener('scroll', updateCatalogPaginationPosition, { passive: true });
+        window.addEventListener('resize', updateCatalogPaginationPosition);
+
+        function renderCatalogFilters() {
+            const categoryCounts = {};
+            const brandCounts = {};
+            products.forEach(product => {
+                categoryCounts[product.originalCategory] = (categoryCounts[product.originalCategory] || 0) + 1;
+                brandCounts[product.brand] = (brandCounts[product.brand] || 0) + 1;
+            });
+            const categoryFilters = document.getElementById('categoryFilters');
+            const brandFilters = document.getElementById('brandFilters');
+            categoryFilters.innerHTML = Object.entries(categoryCounts).sort((a, b) => a[0].localeCompare(b[0])).map(([category, count]) => `
+                <label class="filter-option"><input type="checkbox" value="${category}" onchange="toggleCatalogFilter('categories', this.value, this.checked)"><span>${category}</span><em>${count}</em></label>
+            `).join('');
+            brandFilters.innerHTML = Object.entries(brandCounts).sort((a, b) => a[0].localeCompare(b[0])).map(([brand, count]) => `
+                <label class="filter-option"><input type="checkbox" value="${brand}" onchange="toggleCatalogFilter('brands', this.value, this.checked)"><span>${brand}</span><em>${count}</em></label>
+            `).join('');
+        }
+
+        function toggleCatalogFilter(type, value, checked) {
+            const values = catalogFilters[type];
+            if (checked && !values.includes(value)) values.push(value);
+            if (!checked) catalogFilters[type] = values.filter(item => item !== value);
+            applyCatalogFilters();
+        }
+
+        function clearCatalogFilters() {
+            catalogFilters.categories = [];
+            catalogFilters.brands = [];
+            catalogFilters.minPrice = '';
+            catalogFilters.maxPrice = '';
+            document.getElementById('minPriceFilter').value = '';
+            document.getElementById('maxPriceFilter').value = '';
+            document.getElementById('availableOnlyFilter').checked = false;
+            document.querySelectorAll('#categoryFilters input, #brandFilters input').forEach(input => { input.checked = false; });
+            activeCategory = 'todos';
+            document.querySelectorAll('.cat-btn').forEach(button => button.className = button.dataset.cat === 'todos'
+                ? 'cat-btn active bg-blue-600 text-white px-4 py-1.5 rounded-full font-medium transition'
+                : 'cat-btn bg-gray-700 hover:bg-gray-600 text-gray-300 px-4 py-1.5 rounded-full font-medium transition');
+            applyCatalogFilters();
+        }
+
+        function applyCatalogFilters(resetPage = true) {
+            const minPrice = Number(document.getElementById('minPriceFilter').value) || 0;
+            const maxInput = Number(document.getElementById('maxPriceFilter').value);
+            const maxPrice = maxInput > 0 ? maxInput : Infinity;
+            catalogFilters.minPrice = document.getElementById('minPriceFilter').value;
+            catalogFilters.maxPrice = document.getElementById('maxPriceFilter').value;
+            const desktopQuery = document.getElementById('searchInput')?.value || '';
+            const mobileQuery = document.getElementById('searchInputMobile')?.value || '';
+            const query = (desktopQuery || mobileQuery).toLowerCase().trim();
+            const filtered = products.filter(product => {
+                const matchesCategory = activeCategory === 'todos' || product.category === activeCategory;
+                const matchesSelectedCategory = !catalogFilters.categories.length || catalogFilters.categories.includes(product.originalCategory);
+                const matchesBrand = !catalogFilters.brands.length || catalogFilters.brands.includes(product.brand);
+                const matchesPrice = product.price >= minPrice && product.price <= maxPrice;
+                const matchesSearch = !query || product.name.toLowerCase().includes(query) || product.specs.toLowerCase().includes(query);
+                const matchesAvailability = !document.getElementById('availableOnlyFilter').checked || product.stock > 0;
+                return matchesAvailability && matchesCategory && matchesSelectedCategory && matchesBrand && matchesPrice && matchesSearch;
+            });
+            renderProducts(filtered, resetPage);
+        }
+
+        function filterCategory(category) {
+            activeCategory = category;
+            document.querySelectorAll('.cat-btn').forEach(btn => {
+                if (btn.dataset.cat === category) {
+                    btn.className = "cat-btn active bg-blue-600 text-white px-4 py-1.5 rounded-full font-medium transition";
+                } else {
+                    btn.className = "cat-btn bg-gray-700 hover:bg-gray-600 text-gray-300 px-4 py-1.5 rounded-full font-medium transition";
+                }
+            });
+
+            applyCatalogFilters();
+        }
+
+        function filterLaptopBrand(brand) {
+            catalogFilters.brands = brand === 'todos' ? [] : [brand.toUpperCase()];
+            applyCatalogFilters();
+        }
+
+        function startLaptopBrandRotation() {
+            stopLaptopBrandRotation();
+            laptopBrandTimer = setInterval(() => {
+                const brands = ['Lenovo', 'Dell', 'HP'];
+                const nextBrand = brands[(brands.indexOf(activeLaptopBrand) + 1) % brands.length];
+                filterLaptopBrand(nextBrand);
+            }, 4500);
+        }
+
+        function stopLaptopBrandRotation() {
+            if (laptopBrandTimer) clearInterval(laptopBrandTimer);
+            laptopBrandTimer = null;
+        }
+
+        function isComputerProduct(product) {
+            const category = `${product.category} ${product.originalCategory || ''} ${product.name}`.toUpperCase();
+            return product.category === 'laptops' || /LAPTOP|CPU|DESKTOP|TODO EN UNO|COMPUTADORA|PC/.test(category);
+        }
+
+        function getRelatedProducts(product) {
+            return products.filter(item => item.id !== product.id && item.category === product.category).slice(0, 5).concat(
+                products.filter(item => item.id !== product.id && item.category !== product.category).slice(0, 5)
+            ).slice(0, 5);
+        }
+
+        function openProductPage(id, updateHistory = true) {
+            const sourceProduct = products.find(item => item.id === id);
+            if (!sourceProduct) return;
+            const product = getProductDetails(sourceProduct);
+            const gallery = product.gallery;
+            const tax = product.price * (product.taxRate || 0.07);
+            const total = product.price + tax;
+            const related = getRelatedProducts(product);
+            const computerBenefits = isComputerProduct(product) ? `
+                <section class="product-benefits">
+                    <h2><i class="fa-solid fa-gift"></i> Qué incluye tu compra</h2>
+                    <ul>${purchaseIncludes.map(item => `<li><i class="fa-solid fa-check"></i>${item}</li>`).join('')}</ul>
+                </section>` : '';
+            document.getElementById('productPageContent').innerHTML = `
+                <button onclick="goBackToCatalog()" class="mb-6 inline-flex items-center gap-2 text-gray-300 hover:text-white font-semibold transition"><i class="fa-solid fa-arrow-left"></i> Volver al catálogo</button>
+                <div class="product-detail-shell">
+                    <div class="product-detail-main">
+                        <div>
+                            <div class="product-detail-image"><img id="productMainImage" src="${gallery[0]}" alt="${product.name}"></div>
+                            <div class="product-detail-thumbs">${gallery.map((image, index) => `<button onclick="selectProductImage('${image}', this)" class="product-gallery-thumb ${index === 0 ? 'is-active' : ''} opacity-70 border-2 border-transparent rounded-lg overflow-hidden aspect-video"><img src="${image}" alt="Vista ${index + 1}"></button>`).join('')}</div>
+                        </div>
+                        <div class="product-detail-info">
+                            <span class="text-sm font-semibold text-blue-400 uppercase tracking-wider">${product.brand} · Ref. #${product.reference}</span>
+                            <h1 id="productPageTitle">${product.name}</h1>
+                            <p class="product-description">${product.description}</p>
+                            <p class="product-specs"><i class="fa-solid fa-microchip"></i>${product.specs}</p>
+                            <p class="${product.stock > 0 ? 'product-stock' : 'product-order'}"><i class="fa-solid ${product.stock > 0 ? 'fa-circle-check' : 'fa-clock'}"></i>${product.stock > 0 ? `Disponible: ${product.stock} unidad${product.stock === 1 ? '' : 'es'}` : 'Disponible por pedido'}</p>
+                            <div class="product-price-box"><span>Precio: <strong>$${product.price.toFixed(2)}</strong></span><span>ITBMS (7%): $${tax.toFixed(2)}</span><b>Total: $${total.toFixed(2)}</b></div>
+                            <a href="${whatsAppProductUrl(product)}" target="_blank" rel="noopener" class="product-action product-action-whatsapp"><i class="fa-brands fa-whatsapp"></i>Comprar por WhatsApp</a>
+                            <div class="product-action-row">
+                                <button onclick="addToCart(${product.id})" class="product-action product-action-cart"><i class="fa-solid fa-cart-plus"></i>Agregar al carrito</button>
+                                <button onclick="toggleQuoteModal()" class="product-action product-action-quote"><i class="fa-solid fa-file-invoice"></i>Cotizar</button>
+                            </div>
+                        </div>
+                    </div>
+                    ${computerBenefits}
+                    <section class="product-delivery">
+                        <h2>Tiempo de entrega</h2>
+                        <div class="delivery-grid">
+                            <article class="delivery-card">
+                                <h3><i class="fa-solid fa-truck"></i> Envíos</h3>
+                                <p><i class="fa-solid fa-check"></i> Envíos a todo Panamá.</p>
+                                <div class="delivery-note"><i class="fa-brands fa-whatsapp"></i><span>Consulta por WhatsApp el tiempo de entrega y la disponibilidad final de este producto.</span></div>
+                                <a href="${whatsAppProductUrl(product)}" target="_blank" rel="noopener">Consultar envío</a>
+                            </article>
+                            <article class="delivery-card">
+                                <h3><i class="fa-solid fa-store"></i> Retiro presencial</h3>
+                                <p><i class="fa-solid fa-check"></i> Retira tu compra en nuestra tienda física M-Technology.</p>
+                                <div class="delivery-note"><i class="fa-solid fa-location-dot"></i><span>David, Chiriquí. Escríbenos por WhatsApp para coordinar el retiro.</span></div>
+                                <a href="${whatsAppProductUrl(product)}" target="_blank" rel="noopener">Coordinar retiro</a>
+                            </article>
+                        </div>
+                    </section>
+                    <section class="product-related">
+                        <div class="product-section-heading"><span>También te puede interesar</span><span class="text-sm text-gray-400">Más productos para complementar tu compra</span></div>
+                        <div class="product-related-grid">${related.map(item => `<article class="related-product" onclick="openProductPage(${item.id})"><img src="${item.image}" alt="${item.name}"><div><span>${item.category}</span><h3>${item.name}</h3><strong>$${item.price.toFixed(2)}</strong></div></article>`).join('')}</div>
+                    </section>
+                </div>`;
+            document.getElementById('catalogMain').classList.add('hidden');
+            document.getElementById('heroCarousel').classList.add('hidden');
+            document.getElementById('productPage').classList.remove('hidden');
+            document.getElementById('siteHeader').classList.add('hidden');
+            document.getElementById('categoryNav').classList.add('hidden');
+            if (updateHistory) history.pushState({ productId: id }, '', `#producto-${id}`);
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function selectProductImage(image, button) {
+            document.getElementById('productMainImage').src = image;
+            document.querySelectorAll('.product-gallery-thumb').forEach(item => item.classList.remove('is-active'));
+            button.classList.add('is-active');
+        }
+
+        function whatsAppProductUrl(product) {
+            const productUrl = `${window.location.href.split('#')[0]}#producto-${product.id}`;
+            const message = `Hola Mtech, quiero comprar este producto:\n${product.name}\nPrecio: $${product.price.toFixed(2)}\nRef. #${product.reference}\nLink del producto: ${productUrl}`;
+            return `https://wa.me/${companyPhone}?text=${encodeURIComponent(message)}`;
+        }
+
+        function goBackToCatalog() {
+            if (location.hash) history.back();
+            else showCatalog();
+        }
+
+        function showCatalog() {
+            document.getElementById('productPage').classList.add('hidden');
+            document.getElementById('catalogMain').classList.remove('hidden');
+            document.getElementById('heroCarousel').classList.remove('hidden');
+            document.getElementById('siteHeader').classList.remove('hidden');
+            document.getElementById('categoryNav').classList.remove('hidden');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        window.addEventListener('popstate', () => showCatalog());
+
+        function searchProducts() {
+            applyCatalogFilters();
+        }
+
+        function searchProductsMobile() {
+            applyCatalogFilters();
+        }
+
+        function addToCart(id) {
+            const product = products.find(p => p.id === id);
+            const existing = cart.find(item => item.id === id);
+            if (existing) {
+                existing.qty++;
+            } else {
+                cart.push({ ...product, qty: 1 });
+            }
+            updateCart();
+            toggleCartModal(true);
+        }
+
+        function removeFromCart(id) {
+            cart = cart.filter(item => item.id !== id);
+            updateCart();
+        }
+
+        function changeQty(id, delta) {
+            const item = cart.find(i => i.id === id);
+            if (item) {
+                item.qty += delta;
+                if (item.qty <= 0) removeFromCart(id);
+                else updateCart();
+            }
+        }
+
+        function updateCart() {
+            const cartItems = document.getElementById('cartItems');
+            const cartCount = document.getElementById('cartCount');
+            const totalQty = cart.reduce((acc, item) => acc + item.qty, 0);
+            cartCount.textContent = totalQty;
+
+            if (cart.length === 0) {
+                cartItems.innerHTML = `<div class="text-center text-gray-400 py-12"><i class="fa-solid fa-cart-flatbed text-4xl mb-2"></i><p>El carrito está vacío</p></div>`;
+            } else {
+                cartItems.innerHTML = cart.map(item => `
+                    <div class="flex items-center justify-between bg-gray-700/50 p-3 rounded-lg border border-gray-600">
+                        <div class="flex-1 pr-2">
+                            <h4 class="text-xs font-semibold text-white line-clamp-1">${item.name}</h4>
+                            <span class="text-xs text-blue-400 font-bold">$${item.price.toFixed(2)}</span>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button onclick="changeQty(${item.id}, -1)" class="w-6 h-6 bg-gray-600 hover:bg-gray-500 rounded text-xs text-white">-</button>
+                            <span class="text-xs font-bold text-white">${item.qty}</span>
+                            <button onclick="changeQty(${item.id}, 1)" class="w-6 h-6 bg-gray-600 hover:bg-gray-500 rounded text-xs text-white">+</button>
+                            <button onclick="removeFromCart(${item.id})" class="text-red-400 hover:text-red-300 ml-2 text-xs"><i class="fa-solid fa-trash"></i></button>
+                        </div>
+                    </div>
+                `).join('');
+            }
+
+            const subtotal = cart.reduce((acc, i) => acc + (i.price * i.qty), 0);
+            const tax = cart.reduce((acc, item) => acc + (item.price * item.qty * (item.taxRate || 0.07)), 0);
+            const total = subtotal + tax;
+
+            document.getElementById('cartSubtotal').textContent = `$${subtotal.toFixed(2)}`;
+            document.getElementById('cartTax').textContent = `$${tax.toFixed(2)}`;
+            document.getElementById('cartTotal').textContent = `$${total.toFixed(2)}`;
+        }
+
+        function toggleCartModal(forceOpen = false) {
+            const modal = document.getElementById('cartModal');
+            if (forceOpen) modal.classList.remove('hidden');
+            else modal.classList.toggle('hidden');
+        }
+
+        function toggleQuoteModal() {
+            const modal = document.getElementById('quoteModal');
+            modal.classList.toggle('hidden');
+        }
+
+        async function loadCatalogData() {
+            try {
+                const response = await fetch(articlesApi);
+                if (!response.ok) throw new Error('No se pudo consultar el catálogo');
+                const apiProducts = await response.json();
+                const catalogProducts = apiProducts.filter(item => item.art_sts === '1' && Number(item.art_precio) > 0);
+                if (!catalogProducts.length) throw new Error('El catálogo remoto no tiene artículos');
+                products = catalogProducts.map(mapApiProduct);
+                renderCatalogFilters();
+                applyCatalogFilters();
+            } catch (error) {
+                console.warn('El catálogo remoto no está disponible, se mantiene el respaldo local:', error);
+            }
+        }
+
+        function handleQuoteSubmit(e) {
+            e.preventDefault();
+            toggleQuoteModal();
+            e.target.reset();
+            const successModal = document.getElementById('quoteSuccessModal');
+            successModal.hidden = false;
+            document.getElementById('quoteSuccessClose').focus();
+        }
+
+        function closeQuoteSuccessModal() {
+            document.getElementById('quoteSuccessModal').hidden = true;
+        }
+
+        function sendCartToWhatsApp() {
+            if (cart.length === 0) return alert('Agrega al menos un producto al carrito.');
+            let text = "Hola! Quisiera realizar el siguiente pedido:%0A%0A";
+            cart.forEach(i => {
+                const productUrl = `${window.location.href.split('#')[0]}#producto-${i.id}`;
+                text += `• ${i.qty}x ${i.name} ($${(i.price * i.qty).toFixed(2)})%0A${productUrl}%0A`;
+            });
+            const subtotal = cart.reduce((acc, i) => acc + (i.price * i.qty), 0);
+            const tax = cart.reduce((acc, item) => acc + (item.price * item.qty * (item.taxRate || 0.07)), 0);
+            const total = subtotal + tax;
+            text += `%0ATotal estimado con ITBMS: $${total.toFixed(2)}`;
+            window.open(`https://wa.me/${companyPhone}?text=${text}`, '_blank');
+        }
+
+        // Initialize Catalog
+        renderHeroSlides();
+        renderProducts(products);
+        observeScrollReveals();
+        startHeroCarousel();
+        loadHeroImages();
+        loadCatalogData();
+        if (location.hash.startsWith('#producto-')) {
+            openProductPage(Number(location.hash.replace('#producto-', '')), false);
+        }
+    </script>
+</body>
+</html>
